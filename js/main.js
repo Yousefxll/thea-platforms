@@ -11,6 +11,13 @@ import { buildOverlay } from './overlay.js';
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const canvas = document.getElementById('gl');
 
+// Lenis only consumes vertical wheel input; an unconsumed horizontal wheel
+// (two-finger trackpad swipe) accumulates into the browser's back/forward
+// navigation gesture and unloads the page.
+addEventListener('wheel', (e) => {
+  if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) e.preventDefault();
+}, { passive: false });
+
 function probeGL() {
   try { return canvas.getContext('webgl2') || canvas.getContext('webgl'); }
   catch { return null; }
@@ -35,6 +42,12 @@ function setSplash(pct, label) {
 }
 
 (async function boot() {
+  // read before anything can overwrite it — the scroll wiring below starts
+  // re-saving progress (as 0) as soon as its ScrollTrigger is created
+  const navEntry = performance.getEntriesByType('navigation')[0];
+  const resumeP = navEntry && navEntry.type === 'back_forward'
+    ? parseFloat(sessionStorage.getItem('thea-progress') || '0') : 0;
+
   if (reduced) { mountDomFallback(); return; }
   const gl = probeGL();
   if (!gl) { mountDomFallback(); return; }
@@ -84,6 +97,20 @@ function setSplash(pct, label) {
 
     ScrollTrigger.refresh();
     document.documentElement.classList.add('gl-ready');
+
+    // coming back via back/forward (e.g. an accidental swipe-nav that left the
+    // page) reloads from scratch — resume where the visitor was, not scene 0.
+    // Inline scroll-behavior:auto so the jump is truly instant: under the
+    // stylesheet's smooth behavior it becomes a seconds-long animation that a
+    // late ScrollTrigger refresh can catch mid-flight and pin back to ~0.
+    if (resumeP > 0.005) {
+      const de = document.documentElement;
+      de.style.scrollBehavior = 'auto';
+      ctl.lenis.resize(); // Lenis measures via a deferred observer; unmeasured limit=0 clamps the jump to 0
+      ctl.lenis.scrollTo(ctl.st.start + resumeP * (ctl.st.end - ctl.st.start), { immediate: true, force: true });
+      ScrollTrigger.update();
+      requestAnimationFrame(() => { de.style.scrollBehavior = ''; });
+    }
     const sp = document.getElementById('splash');
     if (sp) { sp.classList.add('hide'); setTimeout(() => sp.remove(), 700); }
 

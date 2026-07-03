@@ -12,6 +12,13 @@ export function wireScroll({ engine, overlay, scenes, reduced }) {
   let bandSum = 0;
   for (let i = 0; i < scenes.length - 1; i++) bandSum += (scenes[i].band || 0.8);
 
+  // last progress, persisted (throttled) so a back/forward reload can resume
+  let lastP = 0, saveTick = 0;
+  const saveProgress = () => {
+    saveTick = 0;
+    try { sessionStorage.setItem('thea-progress', String(lastP)); } catch {}
+  };
+
   const st = ScrollTrigger.create({
     trigger: '#pinned',
     start: 'top top',
@@ -23,6 +30,8 @@ export function wireScroll({ engine, overlay, scenes, reduced }) {
     onUpdate: (self) => {
       const sf = engine.setProgress(self.progress);
       overlay.setActive(sf, self.progress);
+      lastP = self.progress;
+      if (!saveTick) saveTick = setTimeout(saveProgress, 300);
     },
     onToggle: (self) => engine.setVisible(self.isActive),
   });

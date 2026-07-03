@@ -41,7 +41,7 @@ html[lang="en"] { --font: var(--font-en); }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+html { scroll-behavior: smooth; scroll-padding-top: 90px; overscroll-behavior-x: none; }
 
 body {
   font-family: var(--font);
@@ -49,6 +49,10 @@ body {
   color: var(--ink);
   line-height: 1.6;
   overflow-x: hidden;
+  overscroll-behavior-x: none;
+  /* vertical-only experience: a sideways pan must never start a horizontal
+     scroll/rubber-band or the browser's back-forward swipe */
+  touch-action: pan-y pinch-zoom;
   -webkit-font-smoothing: antialiased;
   position: relative;
 }
