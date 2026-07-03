@@ -65,15 +65,18 @@
 
   --font-ar: 'Thmanyah Sans', system-ui, sans-serif;
   --font-ar-display: 'Thmanyah Serif Display', 'Thmanyah Sans', system-ui, serif;
-  --font-en: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  --font-en: 'Thmanyah Sans', system-ui, sans-serif;
   --font: var(--font-ar);
   --font-display: var(--font-ar-display);
 }
 
-html[lang="en"] { --font: var(--font-en); --font-display: var(--font-en); }
+html[lang="en"] { --font: var(--font-en); }
 
-/* main headlines carry the Thmanyah serif display face (Arabic only) */
+/* main headlines carry the Thmanyah serif display face */
 .p-title, .hero-title, .section-head h2, .cta-card h2 { font-family: var(--font-display); }
+
+/* Arabic letters join; any tracking pulls the words apart (worst on mobile) */
+html[lang="ar"] :is(.p-kicker, .p-title, .p-coming, .hero-title, .section-head h2, .cta-card h2, .eyebrow, .pillar-badge) { letter-spacing: 0; }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
