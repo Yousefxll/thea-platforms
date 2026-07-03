@@ -124,14 +124,19 @@ export function createEngine(canvas, cloud, scenes, opts) {
   gsap.ticker.add(render);
   document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
 
-  let resizeTimer = 0;
+  let resizeTimer = 0, lastW = innerWidth;
   addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
       camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
       renderer.setSize(innerWidth, innerHeight);
       if (composer) composer.setSize(innerWidth, innerHeight);
-      if (window.ScrollTrigger) ScrollTrigger.refresh();
+      // height-only changes are the mobile URL bar collapsing/expanding —
+      // re-mapping the scroll range for those makes the page jump mid-scroll
+      if (window.ScrollTrigger && innerWidth !== lastW) {
+        lastW = innerWidth;
+        ScrollTrigger.refresh();
+      }
     }, 160);
   });
 

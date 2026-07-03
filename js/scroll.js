@@ -19,6 +19,16 @@ export function wireScroll({ engine, overlay, scenes, reduced }) {
     try { sessionStorage.setItem('thea-progress', String(lastP)); } catch {}
   };
 
+  const bnd = engine.boundaries;   // progress fraction where each scene is fully formed
+  const nearestScene = (value) => {
+    let best = 0, dist = 2;
+    for (let i = 0; i < bnd.length; i++) {
+      const d = Math.abs(bnd[i] - value);
+      if (d < dist) { dist = d; best = bnd[i]; }
+    }
+    return best;
+  };
+
   const st = ScrollTrigger.create({
     trigger: '#pinned',
     start: 'top top',
@@ -27,6 +37,14 @@ export function wireScroll({ engine, overlay, scenes, reduced }) {
     pin: '#pinned',
     anticipatePin: 1,
     invalidateOnRefresh: true,
+    // settle on the closest scene once scrolling stops, so text is always
+    // crisp without the visitor having to fine-tune the scroll position
+    snap: reduced ? undefined : {
+      snapTo: nearestScene,
+      duration: { min: 0.25, max: 0.8 },
+      delay: 0.08,
+      ease: 'power2.out',
+    },
     onUpdate: (self) => {
       const sf = engine.setProgress(self.progress);
       overlay.setActive(sf, self.progress);
@@ -37,7 +55,6 @@ export function wireScroll({ engine, overlay, scenes, reduced }) {
   });
 
   // chapter / brand jumps — map scene boundary -> actual ScrollTrigger scroll range
-  const bnd = engine.boundaries;
   function jumpTo(i) {
     const target = st.start + (bnd[i] || 0) * (st.end - st.start);
     lenis.scrollTo(target, { duration: 1.4 });

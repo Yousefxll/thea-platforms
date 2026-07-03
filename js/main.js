@@ -54,6 +54,9 @@ function setSplash(pct, label) {
 
   try {
     gsap.registerPlugin(ScrollTrigger);
+    // mobile URL-bar show/hide fires resize; a refresh there re-maps the
+    // whole scroll range mid-gesture and the experience visibly jumps
+    ScrollTrigger.config({ ignoreMobileResize: true });
 
     // capability tiering
     const dbg = gl.getExtension('WEBGL_debug_renderer_info');
@@ -96,6 +99,10 @@ function setSplash(pct, label) {
       goto(p) { const sf = engine.setProgress(p); overlay.setActive(sf, p); engine.renderNow(); return sf; } };
 
     ScrollTrigger.refresh();
+    // the scrollable range only exists once the pin-spacer above is in place;
+    // Lenis measured earlier (limit=0, scroll dead) and its ResizeObserver
+    // re-measure is debounced and not reliable — measure explicitly now
+    ctl.lenis.resize();
     document.documentElement.classList.add('gl-ready');
 
     // coming back via back/forward (e.g. an accidental swipe-nav that left the
@@ -106,7 +113,6 @@ function setSplash(pct, label) {
     if (resumeP > 0.005) {
       const de = document.documentElement;
       de.style.scrollBehavior = 'auto';
-      ctl.lenis.resize(); // Lenis measures via a deferred observer; unmeasured limit=0 clamps the jump to 0
       ctl.lenis.scrollTo(ctl.st.start + resumeP * (ctl.st.end - ctl.st.start), { immediate: true, force: true });
       ScrollTrigger.update();
       requestAnimationFrame(() => { de.style.scrollBehavior = ''; });
