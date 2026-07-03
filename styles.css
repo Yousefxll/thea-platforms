@@ -3,6 +3,31 @@
    Premium dark, bilingual (RTL/LTR), animated
    ============================================================ */
 
+@font-face {
+  font-family: 'Thmanyah Sans';
+  src: url('fonts/thmanyahsans-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Thmanyah Sans';
+  src: url('fonts/thmanyahsans-medium.woff2') format('woff2');
+  font-weight: 500 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Thmanyah Sans';
+  src: url('fonts/thmanyahsans-bold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Thmanyah Sans';
+  src: url('fonts/thmanyahsans-black.woff2') format('woff2');
+  font-weight: 800 900;
+  font-display: swap;
+}
+
 :root {
   --bg: #05060a;
   --bg-2: #080a12;
@@ -32,7 +57,7 @@
   --shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.85);
   --maxw: 1180px;
 
-  --font-ar: 'Tajawal', system-ui, sans-serif;
+  --font-ar: 'Thmanyah Sans', system-ui, sans-serif;
   --font-en: 'Space Grotesk', 'Inter', system-ui, sans-serif;
   --font: var(--font-ar);
 }
