@@ -27,6 +27,12 @@
   font-weight: 800 900;
   font-display: swap;
 }
+@font-face {
+  font-family: 'Thmanyah Serif Display';
+  src: url('fonts/thmanyahserifdisplay-black.woff2') format('woff2');
+  font-weight: 800 900;
+  font-display: swap;
+}
 
 :root {
   --bg: #05060a;
@@ -58,11 +64,16 @@
   --maxw: 1180px;
 
   --font-ar: 'Thmanyah Sans', system-ui, sans-serif;
+  --font-ar-display: 'Thmanyah Serif Display', 'Thmanyah Sans', system-ui, serif;
   --font-en: 'Space Grotesk', 'Inter', system-ui, sans-serif;
   --font: var(--font-ar);
+  --font-display: var(--font-ar-display);
 }
 
-html[lang="en"] { --font: var(--font-en); }
+html[lang="en"] { --font: var(--font-en); --font-display: var(--font-en); }
+
+/* main headlines carry the Thmanyah serif display face (Arabic only) */
+.p-title, .hero-title, .section-head h2, .cta-card h2 { font-family: var(--font-display); }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
